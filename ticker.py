@@ -23,7 +23,7 @@ def get_asset_params(prefix, atype, code, issuer):
 
 
 def get_asset_param_from_pair(pair, prefix):
-    """get aggregation request parameters for asset pair"""
+    """get aggregation parameters for asset pair"""
     if pair[prefix + "_asset_issuer"] == "native":
         return get_asset_params(prefix, "native", "", "")
     else:
@@ -32,7 +32,7 @@ def get_asset_param_from_pair(pair, prefix):
 
 
 def get_aggregation_params(pair, start, end, resolution):
-    """generate aggregation request params for asset pair"""
+    """get aggregation request params"""
     params = {
         "order": "asc",
         "limit": PAGE_LIMIT,
@@ -49,26 +49,36 @@ def sum_tuples(t1, t2):
     """sum all items in two tuples to a third one. tuples must match in size"""
     return tuple(sum(t) for t in zip(t1, t2))
 
+def record_to_tuple(record):
+    return (float(record["base_volume"]), float(record["counter_volume"]), float(record["trade_count"]))
 
 def aggregate_pair(horizon_host, pair, start, end, resolution):
-    """fetch all trades from given time period and aggregate"""
-    print "aggregating pair: ", pair["name"]
+    """
+    fetch all trades from given time period and aggregate
+    :return a tuple of (base_volume, counter_volume, trade_count)
+    """
+    print "aggregating pair:", pair["name"]
     values = (0, 0, 0)
     params = get_aggregation_params(pair, start, end, resolution)
     url = horizon_host + "/trade_aggregations?" + urlencode(params)
+    print url
     consumed = False
     while not consumed:
         json_result = requests.get(url).json()
         records = json_result['_embedded']['records']
         for record in records:
-            values = sum_tuples(values, (record["base_volume"], record["counter_volume"], record["trade_count"]))
+            values = sum_tuples(values, record_to_tuple(record))
         consumed = len(records) < PAGE_LIMIT
         url = json_result["_links"]["next"]
     return values
 
 
 def aggregate_pairs(horizon_host, pairs, start, end, resolution):
-    """"""
+    """
+    perform aggregation on all given pairs and group by the pair name
+    :return a dictionary where keys are a pair name and value is an
+    aggregatedtuple of (base_volume, counter_volume, trade_count)
+    """
     retval = {}
     for pair in pairs:
         name = pair["name"]
@@ -79,20 +89,20 @@ def aggregate_pairs(horizon_host, pairs, start, end, resolution):
 
 
 def format_pair_result(pair_name, pair_tuple):
-    """"""
+    """convert trade aggregation tuple to a readable dictionary"""
     return {
         "name": pair_name,
         "base_volume": pair_tuple[0],
         "counter_volume": pair_tuple[1],
         "trade_count": pair_tuple[2],
-        "price": pair_tuple[1] / pair_tuple[0] if pair_tuple[0] != 0 else 0
+        "price": float(pair_tuple[1]) / pair_tuple[0] if pair_tuple[0] != 0 else 0
     }
 
 
 def main():
     """"""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--pairs_toml", default="pairs.toml", help="path to toml file containing asset pairs")
+    parser.add_argument("--pairs_toml", default="asset-pairs.toml", help="path to toml file containing asset pairs")
     parser.add_argument("--horizon_host", default="http://localhost:8000",
                         help="horizon host (including scheme and port)")  # default to public horizon livenet
     parser.add_argument("--time_duration", type=int, default=86400000,
@@ -115,6 +125,7 @@ def main():
             "pairs": formatted_pairs,
             "last_updated": end_time
         }, outfile, indent=4, sort_keys=True)
+    print "results written to", args.output_file
 
 
 if __name__ == "__main__":

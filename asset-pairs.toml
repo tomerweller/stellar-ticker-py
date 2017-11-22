@@ -88,13 +88,13 @@ counter_asset_issuer = "GA7FCCMTTSUIC37PODEL6EOOSPDRILP6OQI5FWCWDDVDBLJV72W6RINZ
 #base_asset_issuer = "native"
 #counter_asset_code = ["SEED"]
 #counter_asset_issuer = "GDPFSEBZO2W4TLWZO7FIMMG3QONHXYVF6LUULI6HUJS6PJLE4TRZEXLF"
-
-[[pair]]
-name = "XLM_XEL"
-base_asset_code = "XLM"
-base_asset_issuer = "native"
-counter_asset_code = ["XEL"]
-counter_asset_issuer = "GAXELY4AOIRVONF7V25BUPDNKZYIVT6CWURG7R2I6NQU26IQSQODBVCS"
+#
+#[[pair]]
+#name = "XLM_XEL"
+#base_asset_code = "XLM"
+#base_asset_issuer = "native"
+#counter_asset_code = ["XEL"]
+#counter_asset_issuer = "GAXELY4AOIRVONF7V25BUPDNKZYIVT6CWURG7R2I6NQU26IQSQODBVCS"
 
 #[[pair]]
 #name = "BTC_XEL"
