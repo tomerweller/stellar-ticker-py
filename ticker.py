@@ -5,7 +5,7 @@ import requests
 import argparse
 from urllib import urlencode
 
-PAGE_LIMIT = 200
+PAGE_LIMIT = 200  # for aggregation endpoint
 
 
 def millis():
@@ -49,8 +49,11 @@ def sum_tuples(t1, t2):
     """sum all items in two tuples to a third one. tuples must match in size"""
     return tuple(sum(t) for t in zip(t1, t2))
 
+
 def record_to_tuple(record):
-    return (float(record["base_volume"]), float(record["counter_volume"]), float(record["trade_count"]))
+    """convert aggregation record to (base_volume, counter_volume, trade_count) tuple"""
+    return float(record["base_volume"]), float(record["counter_volume"]), int(record["trade_count"])
+
 
 def aggregate_pair(horizon_host, pair, start, end, resolution):
     """
@@ -61,7 +64,6 @@ def aggregate_pair(horizon_host, pair, start, end, resolution):
     values = (0, 0, 0)
     params = get_aggregation_params(pair, start, end, resolution)
     url = horizon_host + "/trade_aggregations?" + urlencode(params)
-    print url
     consumed = False
     while not consumed:
         json_result = requests.get(url).json()
@@ -69,7 +71,8 @@ def aggregate_pair(horizon_host, pair, start, end, resolution):
         for record in records:
             values = sum_tuples(values, record_to_tuple(record))
         consumed = len(records) < PAGE_LIMIT
-        url = json_result["_links"]["next"]
+        print url
+        url = json_result["_links"]["next"]["href"]
     return values
 
 
