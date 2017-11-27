@@ -18,7 +18,7 @@ counter_asset_issuer = "GDXTJEK4JZNSTNQAWA53RZNS2GIKTDRPEUWDXELFMKU52XNECNVDVXDI
 Note: 
 - The `name` field can contain any arbitrary string but should be a meaningful description of the pair. 
 - Pairs that share the same `name` will be aggregated together. This allows for multiple anchors of, for example, 
-`BTC`, to share a ticker entry.
+`BTC` to share a ticker entry.
 
 ## Output ##
 ```json
