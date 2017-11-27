@@ -95,23 +95,23 @@ def format_pair_result(pair_name, pair_tuple):
     """convert trade aggregation tuple to a readable dictionary"""
     return {
         "name": pair_name,
-        "base_volume": pair_tuple[0],
-        "counter_volume": pair_tuple[1],
+        "base_volume": "%.7f" % pair_tuple[0],
+        "counter_volume": "%.7f" % pair_tuple[1],
         "trade_count": pair_tuple[2],
-        "price": float(pair_tuple[1]) / pair_tuple[0] if pair_tuple[0] != 0 else 0
+        "price": "%.7f" % (float(pair_tuple[1]) / pair_tuple[0] if pair_tuple[0] != 0 else 0)
     }
 
 
 def main():
     """"""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--pairs_toml", default="asset-pairs.toml", help="path to toml file containing asset pairs")
-    parser.add_argument("--horizon_host", default="http://localhost:8000",
-                        help="horizon host (including scheme and port)")  # default to public horizon livenet
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--pairs_toml", default="pairs.toml", help="path to toml file containing asset pairs")
+    parser.add_argument("--horizon_host", default="https://horizon.stellar.org/",
+                        help="horizon host, including scheme")
     parser.add_argument("--time_duration", type=int, default=86400000,
-                        help="time duration in millis")  # default to one day
+                        help="time duration in millis")
     parser.add_argument("--bucket_resolution", type=int, default=300000,
-                        help="bucket resolution for aggregation")  # default to 5min
+                        help="bucket resolution for aggregation in millis")
     parser.add_argument("--output_file", default="ticker.json", help="output file path")
     args = parser.parse_args()
 
@@ -126,7 +126,7 @@ def main():
     with open(args.output_file, 'w') as outfile:
         json.dump({
             "pairs": formatted_pairs,
-            "last_updated": end_time
+            "generated_at": now
         }, outfile, indent=4, sort_keys=True)
     print "results written to", args.output_file
 
