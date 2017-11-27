@@ -41,21 +41,21 @@ Note:
 - `trade_count` is a total count of trades for the given time period.
 - `price` is an average calculated as `counter_volume/base_volume`
   
-## Installing ##
-Assuming python 2 and pip are installed  
+## Install ##
+Assuming python 2 and pip are installed 
 
 ```bash
 $ pip install -r requirements.txt
 ```
   
-## Running ## 
+## Run ## 
 
 To run with default settings: 
 ```bash
 $ python ticker.py
 ```
 
-## Configuration
+### Configuration
 ```bash
 $ python ticker.py --help
 usage: ticker.py [-h] [--pairs_toml PAIRS_TOML] [--horizon_host HORIZON_HOST]
