@@ -36,9 +36,10 @@ Note:
 }
 ```
 
-- `generated_at` - timestamp of generation, represented as millis since epoch
-- `trade_count` - total count of trades for the time period
-- `price` - average price calculated as `counter_volume/base_volume`
+Note: 
+- `generated_at` is timestamp of generation, represented as millis since epoch.
+- `trade_count` is a total count of trades for the given time period.
+- `price` is an average calculated as `counter_volume/base_volume`
   
 ## Installing ##
 Assuming python 2 and pip are installed  
